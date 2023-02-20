@@ -1,0 +1,76 @@
+#Deployment com 3 replicas
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: hello-world
+  name: hello-world
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hello-world
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: hello-world
+    spec:
+      containers:
+      - image: mgobo/kubernetes:hello-world
+        name: hello-world
+        imagePullPolicy: Always
+        resources: {}
+#        env:
+#          - name: HELLO_WORLD_SERVICE_HOST
+#            value: http://hello-world
+#            valueFrom:
+#              configMapKeyRef:
+#                key: HELLO_WORLD_SERVICE_HOST
+#                name: hello-world-config-map
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+status: {}
+---
+#SERVICE NodePort - helloWorldService
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: hello-world
+  name: hello-world
+  namespace: default
+spec:
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: hello-world
+  sessionAffinity: None
+  type: NodePort
+---
+#INGRESS - helloWorldIngress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gateway-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: "/"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: "/"
+            pathType: "Prefix"
+            #pathType: ImplementationSpecific
+            backend:
+              service:
+                name: hello-world
+                port:
+                  number:  8080
+#  ingressClassName: nginx
+status:
+  loadBalancer: {}
