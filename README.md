@@ -9,3 +9,5 @@ São 3 paths:
 O projeto possui o diretorio **_docker_** e **_kubernetes_**.  
 Dentro de docker, apenas o **_Dockerfile_** para dar origem ao container.  
 Dentro de kubernetes o arquivo **_hello-world-k8s.yaml_** faz o deployment do ambiente.
+
+Teste123
